@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Ingredients.Models;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Ingredients.Controllers
 {
@@ -18,6 +19,37 @@ namespace Ingredients.Controllers
         public ActionResult Index()
         {
             return View(db.Ingredients.ToList());
+
+        }
+
+        public ActionResult Upload(int? id)
+        {
+            Ingredient ingredient = new Ingredient();
+
+            TextFieldParser parser = new TextFieldParser(@"C:\Users\Nicholas\Documents\Visual Studio 2015\Projects\Ingredients\test.csv");
+            parser.TextFieldType = FieldType.Delimited;
+            parser.SetDelimiters(",");
+            while (!parser.EndOfData)
+            {
+                //Process row
+                string[] fields = parser.ReadFields();
+
+                ingredient.Name = fields[0];
+                ingredient.Quantity = Convert.ToDecimal (fields[1]);
+                ingredient.Units = fields[2];
+                ingredient.Sku = fields[3];
+                ingredient.Supplier = fields[4];
+
+                if (ModelState.IsValid)
+                {
+                    db.Ingredients.Add(ingredient);
+                    db.SaveChanges();
+                    
+                }
+            }
+            parser.Close();
+
+            return RedirectToAction("Index");
         }
 
         // GET: Ingredients/Details/5
@@ -144,5 +176,7 @@ namespace Ingredients.Controllers
             }
             base.Dispose(disposing);
         }
+
+        
     }
 }
