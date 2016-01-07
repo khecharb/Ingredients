@@ -89,6 +89,27 @@ namespace Ingredients.Controllers
             return View(ingredient);
         }
 
+        public ActionResult Duplicate(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Ingredient ingredient = db.Ingredients.Find(id);
+            if (ingredient == null)
+            {
+                return HttpNotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                db.Ingredients.Add(ingredient);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            return View(ingredient);
+        }
+
         // GET: Ingredients/Delete/5
         public ActionResult Delete(int? id)
         {
